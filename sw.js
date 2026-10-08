@@ -1,7 +1,7 @@
 // Service worker di HOME IRON
 // - file dell'app: prima la rete (cosi' le modifiche si vedono subito), la copia salvata serve offline
 // - Tailwind, icone e font esterni: salvati la prima volta, poi funzionano anche senza internet
-const VERSION = 'home-iron-v1';
+const VERSION = 'home-iron-v2';
 const CORE = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 self.addEventListener('install', event => {
@@ -25,7 +25,7 @@ self.addEventListener('fetch', event => {
 
   if (url.origin === self.location.origin) {
     event.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-cache' })
         .then(res => {
           const copy = res.clone();
           caches.open(VERSION).then(cache => cache.put(req, copy));
