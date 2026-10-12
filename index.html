@@ -211,15 +211,15 @@
         <!-- TAB 2A: ROUTINE BUILDER (CREAZIONE SCHEDA) -->
         <!-- ========================================== -->
         <section id="tab-routine-builder" class="hidden space-y-4 pt-2 pb-4">
-            <div class="bg-cardBg p-4 rounded-xl border border-cardBorder flex items-center justify-between">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="bg-neonGreenLight text-neonGreen font-black text-[11px] px-2 py-0.5 rounded uppercase">CREAZIONE SCHEDA</span>
-                        <span id="builder-day-indicator" class="text-[13px] font-bold text-gray-300">Giorno 1 di 3</span>
+            <div class="bg-cardBg p-4 rounded-xl border border-cardBorder flex items-center justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <span class="bg-neonGreenLight text-neonGreen font-black text-[11px] px-2 py-0.5 rounded uppercase whitespace-nowrap">CREAZIONE SCHEDA</span>
+                        <span id="builder-day-indicator" class="text-[13px] font-bold text-gray-300 whitespace-nowrap">Giorno 1 di 3</span>
                     </div>
-                    <h2 id="builder-routine-title" class="text-lg font-black text-white mt-1">Nome Scheda</h2>
+                    <h2 id="builder-routine-title" class="text-lg font-black text-white mt-1 truncate">Nome Scheda</h2>
                 </div>
-                <button onclick="cancelRoutineCreation()" class="px-3 py-1.5 bg-cardBorder text-gray-300 font-bold text-[13px] rounded-xl active-scale">
+                <button onclick="cancelRoutineCreation()" class="shrink-0 px-3 py-1.5 bg-cardBorder text-gray-300 font-bold text-[13px] rounded-xl active-scale">
                     Annulla
                 </button>
             </div>
@@ -252,21 +252,21 @@
         <!-- ========================================== -->
         <section id="tab-workout" class="hidden space-y-4 pt-0 pb-4">
             <div id="workout-top" style="margin-bottom: -0.5rem">
-            <div id="workout-top-spacer" style="height: var(--bar-h, 90px)"></div>
+            <div id="workout-top-spacer" style="height: var(--bar-h, 108px)"></div>
             <div id="workout-top-bar" class="fixed top-0 inset-x-0 z-30 bg-bgMain border-b border-cardBorder/60">
             <div class="max-w-2xl mx-auto px-4 pt-1 pb-2 space-y-2">
-            <div class="bg-cardBg p-3 rounded-xl border border-cardBorder flex items-center justify-between">
-                <div>
-                    <input type="text" id="workout-name-input" class="bg-transparent text-lg font-black text-white focus:outline-none focus:border-b focus:border-neonGreen w-full" value="Allenamento Personalizzato" placeholder="Nome Allenamento...">
-                    <div class="text-[13px] text-gray-400 flex items-center gap-2 mt-0.5">
+            <div class="bg-cardBg p-3 rounded-xl border border-cardBorder space-y-2">
+                <input type="text" id="workout-name-input" class="block w-full min-w-0 bg-transparent text-[17px] font-black text-white truncate focus:outline-none focus:border-b focus:border-neonGreen" value="Allenamento Personalizzato" placeholder="Nome Allenamento...">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-2 min-w-0 text-[13px] text-gray-400">
                         <i class="fa-regular fa-clock text-neonGreen"></i>
                         <span id="workout-timer">00:00</span>
-                        <span id="workout-routine-tag" class="hidden bg-neonGreenLight text-neonGreen px-2 py-0.5 rounded text-[11px] font-bold">ESECUZIONE SCHEDA</span>
+                        <span id="workout-routine-tag" class="hidden bg-neonGreenLight text-neonGreen px-2 py-0.5 rounded text-[11px] font-bold whitespace-nowrap">SCHEDA</span>
                     </div>
+                    <button onclick="finishWorkout()" class="shrink-0 px-3.5 py-2 bg-neonGreen text-black font-extrabold text-[13px] rounded-xl active-scale neon-glow">
+                        COMPLETA
+                    </button>
                 </div>
-                <button onclick="finishWorkout()" class="px-4 py-2.5 bg-neonGreen text-black font-extrabold text-[13px] rounded-xl active-scale neon-glow">
-                    COMPLETA
-                </button>
             </div>
 
             <!-- Pulsante ULTIMO ALLENAMENTO (solo nei registri) -->
@@ -1750,7 +1750,7 @@
 
             document.getElementById('workout-name-input').value = workoutTitle;
             const routineTag = document.getElementById('workout-routine-tag');
-            routineTag.innerText = 'ESECUZIONE SCHEDA';
+            routineTag.innerText = 'SCHEDA';
             routineTag.classList.remove('hidden');
             setLastLogButtonVisible(false);
 
