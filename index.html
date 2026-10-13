@@ -159,9 +159,9 @@
             <div class="space-y-4">
                 
                 <!-- Primary Action CTA -->
-                <button onclick="openWorkoutStartModal()" class="w-full py-3.5 px-3 bg-neonGreen hover:bg-neonGreenHover text-black font-black rounded-2xl active-scale flex items-center justify-center gap-2 text-[14px] shadow-lg neon-glow">
-                    <i class="fa-solid fa-plus text-lg"></i>
-                    <span>INIZIA NUOVO ALLENAMENTO</span>
+                <button id="home-shortcut-btn" onclick="homeShortcut()" class="w-full py-3.5 px-3 bg-neonGreen hover:bg-neonGreenHover text-black font-black rounded-2xl active-scale flex items-center justify-center gap-2 text-[14px] shadow-lg neon-glow">
+                    <i id="home-shortcut-icon" class="fa-solid fa-plus text-lg shrink-0"></i>
+                    <span id="home-shortcut-label" class="truncate">INIZIA ALLENAMENTO</span>
                 </button>
 
                 <!-- Activity Summary Grid -->
@@ -214,7 +214,7 @@
             <div class="bg-cardBg p-4 rounded-xl border border-cardBorder flex items-center justify-between gap-3">
                 <div class="min-w-0 flex-1">
                     <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <span class="bg-neonGreenLight text-neonGreen font-black text-[11px] px-2 py-0.5 rounded uppercase whitespace-nowrap">CREAZIONE SCHEDA</span>
+                        <span id="builder-mode-tag" class="bg-neonGreenLight text-neonGreen font-black text-[11px] px-2 py-0.5 rounded uppercase whitespace-nowrap">CREAZIONE SCHEDA</span>
                         <span id="builder-day-indicator" class="text-[13px] font-bold text-gray-300 whitespace-nowrap">Giorno 1 di 3</span>
                     </div>
                     <h2 id="builder-routine-title" class="text-lg font-black text-white mt-1 truncate">Nome Scheda</h2>
@@ -223,6 +223,9 @@
                     Annulla
                 </button>
             </div>
+
+            <!-- Scelta del giorno (solo in modifica scheda) -->
+            <div id="builder-day-tabs" class="hidden flex-wrap gap-2"></div>
 
             <!-- Current Day Title Input -->
             <div class="bg-cardBg p-3 rounded-xl border border-cardBorder space-y-1">
@@ -256,7 +259,12 @@
             <div id="workout-top-bar" class="fixed top-0 inset-x-0 z-30 bg-bgMain border-b border-cardBorder/60">
             <div class="max-w-2xl mx-auto px-4 pt-1 pb-2 space-y-2">
             <div class="bg-cardBg p-3 rounded-xl border border-cardBorder space-y-2">
-                <input type="text" id="workout-name-input" class="block w-full min-w-0 bg-transparent text-[17px] font-black text-white truncate focus:outline-none focus:border-b focus:border-neonGreen" value="Allenamento Personalizzato" placeholder="Nome Allenamento...">
+                <div class="flex items-center gap-2">
+                    <input type="text" id="workout-name-input" class="block flex-1 min-w-0 bg-transparent text-[17px] font-black text-white truncate focus:outline-none focus:border-b focus:border-neonGreen" value="Allenamento Personalizzato" placeholder="Nome Allenamento...">
+                    <button onclick="exitWorkout()" class="shrink-0 px-3 py-1.5 bg-cardBorder hover:bg-gray-700 text-gray-200 font-bold text-[13px] rounded-xl active-scale flex items-center gap-1.5">
+                        <i class="fa-solid fa-right-from-bracket text-[12px]"></i><span>ESCI</span>
+                    </button>
+                </div>
                 <div class="flex items-center justify-between gap-3">
                     <div class="flex items-center gap-2 min-w-0 text-[13px] text-gray-400">
                         <i class="fa-regular fa-clock text-neonGreen"></i>
@@ -423,22 +431,19 @@
     </nav>
 
     <!-- MODAL: START WORKOUT MODE SELECTOR -->
-    <div id="workout-start-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4">
+    <div id="workout-start-modal" class="fixed inset-x-0 top-0 z-40 bg-black/80 backdrop-blur-sm hidden items-end sm:items-center justify-center p-0 sm:p-4" style="bottom: var(--nav-h, 72px)">
         <div class="bg-cardBg border-0 sm:border border-cardBorder w-full h-full sm:h-auto sm:max-w-lg rounded-none sm:rounded-2xl sm:max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
             <div class="p-4 border-b border-cardBorder flex items-center justify-between" style="padding-top: calc(1rem + env(safe-area-inset-top, 0px))">
                 <div>
                     <h3 class="font-black text-white text-base uppercase tracking-wider">Inizia Allenamento</h3>
                     <p class="text-[13px] text-gray-400">Scegli la modalità di sessione</p>
                 </div>
-                <button onclick="closeWorkoutStartModal()" class="text-gray-400 hover:text-white p-1">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
             </div>
 
-            <div class="flex-1 min-h-0 p-4 pb-8 space-y-3 overflow-y-auto">
+            <div class="flex-1 min-h-0 p-3 pb-6 space-y-2.5 overflow-y-auto">
                 <!-- Option 1: Single Free Workout -->
-                <button onclick="selectWorkoutOption('single')" class="w-full bg-bgMain hover:border-neonGreen border border-cardBorder p-4 rounded-2xl flex items-center gap-4 text-left active-scale transition">
-                    <div class="w-12 h-12 rounded-xl bg-neonGreenLight border border-neonGreen/30 flex items-center justify-center text-neonGreen text-xl shrink-0">
+                <button onclick="selectWorkoutOption('single')" class="w-full bg-bgMain hover:border-neonGreen border border-cardBorder p-3.5 rounded-2xl flex items-center gap-3 text-left active-scale transition">
+                    <div class="w-11 h-11 rounded-xl bg-neonGreenLight border border-neonGreen/30 flex items-center justify-center text-neonGreen text-xl shrink-0">
                         <i class="fa-solid fa-bolt"></i>
                     </div>
                     <div class="flex-1">
@@ -449,8 +454,8 @@
                 </button>
 
                 <!-- Option 2: Create New Routine -->
-                <button onclick="selectWorkoutOption('create_routine')" class="w-full bg-bgMain hover:border-neonGreen border border-cardBorder p-4 rounded-2xl flex items-center gap-4 text-left active-scale transition">
-                    <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-xl shrink-0">
+                <button onclick="selectWorkoutOption('create_routine')" class="w-full bg-bgMain hover:border-neonGreen border border-cardBorder p-3.5 rounded-2xl flex items-center gap-3 text-left active-scale transition">
+                    <div class="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-400 text-xl shrink-0">
                         <i class="fa-solid fa-folder-plus"></i>
                     </div>
                     <div class="flex-1">
@@ -461,8 +466,8 @@
                 </button>
 
                 <!-- Option 3: Registro di allenamento -->
-                <button onclick="selectWorkoutOption('log')" class="w-full bg-bgMain hover:border-neonGreen border border-cardBorder p-4 rounded-2xl flex items-center gap-4 text-left active-scale transition">
-                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl shrink-0">
+                <button onclick="selectWorkoutOption('log')" class="w-full bg-bgMain hover:border-neonGreen border border-cardBorder p-3.5 rounded-2xl flex items-center gap-3 text-left active-scale transition">
+                    <div class="w-11 h-11 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl shrink-0">
                         <i class="fa-solid fa-book-open"></i>
                     </div>
                     <div class="flex-1">
@@ -722,6 +727,16 @@
             return { start, add, stop };
         })();
 
+        // Scelte di recupero (uguali in creazione scheda, allenamento libero e registro)
+        const REST_SETS_OPTIONS = [['0s', 'Superset (0 s)'], ['45s', '45 secondi'], ['60s', '60 secondi'], ['90s', '90 secondi'], ['120s', '2 minuti'], ['180s', '3 minuti']];
+        const REST_EX_OPTIONS = [['60s', '60 secondi'], ['90s', '90 secondi'], ['2 min', '2 minuti'], ['3 min', '3 minuti'], ['5 min', '5 minuti']];
+        function restOptionsHTML(list, selected, fallback) {
+            const sel = selected || fallback;
+            return list.map(([v, l]) => `<option value="${v}" ${v === sel ? 'selected' : ''}>${l}</option>`).join('');
+        }
+        function restSetsOptions(sel) { return restOptionsHTML(REST_SETS_OPTIONS, sel, '60s'); }
+        function restExOptions(sel) { return restOptionsHTML(REST_EX_OPTIONS, sel, '2 min'); }
+
         function parseRestToSeconds(str, fallback) {
             const m = String(str || '').match(/(\d+)\s*(s|min)/i);
             if (!m) return fallback;
@@ -783,6 +798,9 @@
         };
 
         let currentActiveWorkout = null;
+        let currentTab = 'home';
+        let editingRoutineId = null;
+        let startModalOpen = false;
         let timerInterval = null;
         let isSelectingForBuilder = false;
         let currentExerciseCategory = 'all';
@@ -860,7 +878,27 @@
             localStorage.setItem('THC_APP_DATA', JSON.stringify(appData));
         }
 
+        function updateNavHighlight() {
+            let active = currentTab;
+            if (currentTab === 'routine-builder') active = 'workout';
+            else if (currentTab === 'stats') active = 'home';
+            if (startModalOpen) active = 'workout';
+            ['home', 'workout', 'history', 'settings'].forEach(k => {
+                const b = document.getElementById('nav-btn-' + k);
+                if (!b) return;
+                b.classList.toggle('text-neonGreen', k === active);
+                b.classList.toggle('text-gray-400', k !== active);
+            });
+        }
+
         function switchTab(tabName) {
+            // la barra in fondo resta visibile sopra le pagine di scelta: toccandola si chiudono
+            closeWorkoutStartModal();
+            closeSelectDayModal();
+            closeCreateRoutineModal();
+            closeCreateLogModal();
+            currentTab = tabName;
+
             const tabs = ['home', 'routine-builder', 'workout', 'history', 'settings', 'stats'];
             
             tabs.forEach(tab => {
@@ -891,11 +929,7 @@
                 window.requestAnimationFrame(() => { updateHomeLock(); if (tabName === 'settings') updateScreenInfo(); });
             }
 
-            if (tabName === 'stats') {
-                const homeBtn = document.getElementById('nav-btn-home');
-                homeBtn.classList.remove('text-gray-400');
-                homeBtn.classList.add('text-neonGreen');
-            }
+            updateNavHighlight();
 
             if (tabName === 'history') {
                 renderHistoryList();
@@ -1364,8 +1398,8 @@
                     notes: ex.notes || ''
                 };
                 if (copy.sets.length === 0) copy.sets.push({ setNum: 1, weight: 20, reps: 10, completed: false });
-                if (ex.restBetweenSets) copy.restBetweenSets = ex.restBetweenSets;
-                if (ex.restBetweenExercises) copy.restBetweenExercises = ex.restBetweenExercises;
+                copy.restBetweenSets = ex.restBetweenSets || '60s';
+                copy.restBetweenExercises = ex.restBetweenExercises || '2 min';
                 currentActiveWorkout.exercises.push(copy);
                 added++;
             });
@@ -1385,11 +1419,15 @@
             renderSavedLogsList();
             document.getElementById('workout-start-modal').classList.remove('hidden');
             document.getElementById('workout-start-modal').classList.add('flex');
+            startModalOpen = true;
+            updateNavHighlight();
         }
 
         function closeWorkoutStartModal() {
             document.getElementById('workout-start-modal').classList.add('hidden');
             document.getElementById('workout-start-modal').classList.remove('flex');
+            startModalOpen = false;
+            updateNavHighlight();
         }
 
         function selectWorkoutOption(option) {
@@ -1424,6 +1462,7 @@
 
             closeCreateRoutineModal();
 
+            editingRoutineId = null;
             routineWizardState = {
                 name: name,
                 totalDays: daysCount,
@@ -1438,28 +1477,93 @@
         function setupDayBuilderView() {
             const curIdx = routineWizardState.currentDayIndex;
             const total = routineWizardState.totalDays;
+            const editing = editingRoutineId !== null;
 
-            document.getElementById('builder-routine-title').innerText = routineWizardState.name;
-            document.getElementById('builder-day-indicator').innerText = `GIORNO ${curIdx} DI ${total}`;
-            
-            document.getElementById('builder-day-title-input').value = `Giorno ${curIdx}`;
-
-            const nextBtn = document.getElementById('builder-next-day-btn');
-            if (curIdx < total) {
-                nextBtn.innerHTML = `<span>PROSEGUI AL GIORNO ${curIdx + 1}</span> <i class="fa-solid fa-arrow-right"></i>`;
-            } else {
-                nextBtn.innerHTML = `<span>SALVA SCHEDA COMPLETA</span> <i class="fa-solid fa-check"></i>`;
-            }
-
-            // Ensure current day array exists
+            // assicura che il giorno esista
             if (!routineWizardState.days[curIdx - 1]) {
                 routineWizardState.days[curIdx - 1] = {
                     dayTitle: `Giorno ${curIdx}`,
                     exercises: []
                 };
             }
+            const curDay = routineWizardState.days[curIdx - 1];
 
+            document.getElementById('builder-routine-title').innerText = routineWizardState.name;
+            document.getElementById('builder-day-indicator').innerText = `GIORNO ${curIdx} DI ${total}`;
+            document.getElementById('builder-mode-tag').innerText = editing ? 'MODIFICA SCHEDA' : 'CREAZIONE SCHEDA';
+            document.getElementById('builder-day-title-input').value = curDay.dayTitle || `Giorno ${curIdx}`;
+
+            const nextBtn = document.getElementById('builder-next-day-btn');
+            if (editing) {
+                nextBtn.innerHTML = `<span>SALVA MODIFICHE</span> <i class="fa-solid fa-check"></i>`;
+            } else if (curIdx < total) {
+                nextBtn.innerHTML = `<span>PROSEGUI AL GIORNO ${curIdx + 1}</span> <i class="fa-solid fa-arrow-right"></i>`;
+            } else {
+                nextBtn.innerHTML = `<span>SALVA SCHEDA COMPLETA</span> <i class="fa-solid fa-check"></i>`;
+            }
+
+            renderBuilderDayTabs();
             renderBuilderExercises();
+        }
+
+        function renderBuilderDayTabs() {
+            const box = document.getElementById('builder-day-tabs');
+            const editing = editingRoutineId !== null;
+            box.classList.toggle('hidden', !editing);
+            box.classList.toggle('flex', editing);
+            box.innerHTML = '';
+            if (!editing) return;
+            routineWizardState.days.forEach((d, i) => {
+                const active = i === routineWizardState.currentDayIndex - 1;
+                const b = document.createElement('button');
+                b.className = active
+                    ? 'px-4 py-2 rounded-full bg-neonGreen text-black font-black text-[13px] border border-neonGreen'
+                    : 'px-4 py-2 rounded-full bg-cardBorder text-gray-100 font-bold text-[13px] border border-gray-600';
+                b.innerText = `Giorno ${i + 1}`;
+                b.onclick = () => goToBuilderDay(i);
+                box.appendChild(b);
+            });
+        }
+
+        function goToBuilderDay(i) {
+            const input = document.getElementById('builder-day-title-input').value.trim();
+            const cur = routineWizardState.days[routineWizardState.currentDayIndex - 1];
+            if (cur) cur.dayTitle = input || `Giorno ${routineWizardState.currentDayIndex}`;
+            routineWizardState.currentDayIndex = i + 1;
+            setupDayBuilderView();
+        }
+
+        function editRoutine(index) {
+            const routine = appData.savedRoutines[index];
+            if (!routine) return;
+            closeWorkoutStartModal();
+            editingRoutineId = routine.id;
+            const days = JSON.parse(JSON.stringify(routine.days || []));
+            if (days.length === 0) days.push({ dayTitle: 'Giorno 1', exercises: [] });
+            routineWizardState = { name: routine.name, totalDays: days.length, currentDayIndex: 1, days: days };
+            setupDayBuilderView();
+            switchTab('routine-builder');
+        }
+
+        function saveRoutineEdits() {
+            const idx = routineWizardState.currentDayIndex;
+            const cur = routineWizardState.days[idx - 1];
+            const input = document.getElementById('builder-day-title-input').value.trim();
+            if (cur) cur.dayTitle = input || `Giorno ${idx}`;
+
+            const routine = appData.savedRoutines.find(r => r.id === editingRoutineId);
+            if (!routine) {
+                alert("Scheda non trovata.");
+                editingRoutineId = null;
+                switchTab('home');
+                return;
+            }
+            routine.days = routineWizardState.days;
+            routine.totalDays = routine.days.length;
+            saveLocalData();
+            editingRoutineId = null;
+            showToast("Scheda aggiornata!");
+            switchTab('home');
         }
 
         function renderBuilderExercises() {
@@ -1516,21 +1620,13 @@
                             <div class="bg-bgMain/60 p-2 rounded-lg border border-cardBorder/60">
                                 <label class="text-[11px] text-gray-400 font-semibold block mb-1">Recupero Tra Serie</label>
                                 <select onchange="updateBuilderExParam(${exIndex}, 'restBetweenSets', this.value)" class="w-full bg-cardBg border border-cardBorder rounded py-1 px-1.5 text-[13px] text-white focus:outline-none">
-                                    <option value="45s" ${ex.restBetweenSets === '45s' ? 'selected' : ''}>45 secondi</option>
-                                    <option value="60s" ${ex.restBetweenSets === '60s' || !ex.restBetweenSets ? 'selected' : ''}>60 secondi</option>
-                                    <option value="90s" ${ex.restBetweenSets === '90s' ? 'selected' : ''}>90 secondi</option>
-                                    <option value="120s" ${ex.restBetweenSets === '120s' ? 'selected' : ''}>2 minuti</option>
-                                    <option value="180s" ${ex.restBetweenSets === '180s' ? 'selected' : ''}>3 minuti</option>
+                                    ${restSetsOptions(ex.restBetweenSets)}
                                 </select>
                             </div>
                             <div class="bg-bgMain/60 p-2 rounded-lg border border-cardBorder/60">
                                 <label class="text-[11px] text-gray-400 font-semibold block mb-1">Recupero Tra Esercizi</label>
                                 <select onchange="updateBuilderExParam(${exIndex}, 'restBetweenExercises', this.value)" class="w-full bg-cardBg border border-cardBorder rounded py-1 px-1.5 text-[13px] text-white focus:outline-none">
-                                    <option value="60s" ${ex.restBetweenExercises === '60s' ? 'selected' : ''}>60 secondi</option>
-                                    <option value="90s" ${ex.restBetweenExercises === '90s' ? 'selected' : ''}>90 secondi</option>
-                                    <option value="2 min" ${ex.restBetweenExercises === '2 min' || !ex.restBetweenExercises ? 'selected' : ''}>2 minuti</option>
-                                    <option value="3 min" ${ex.restBetweenExercises === '3 min' ? 'selected' : ''}>3 minuti</option>
-                                    <option value="5 min" ${ex.restBetweenExercises === '5 min' ? 'selected' : ''}>5 minuti</option>
+                                    ${restExOptions(ex.restBetweenExercises)}
                                 </select>
                             </div>
                         </div>
@@ -1560,6 +1656,7 @@
         }
 
         function saveCurrentDayAndProceed() {
+            if (editingRoutineId !== null) { saveRoutineEdits(); return; }
             const curIdx = routineWizardState.currentDayIndex;
             const total = routineWizardState.totalDays;
             const dayTitleInput = document.getElementById('builder-day-title-input').value.trim();
@@ -1596,7 +1693,11 @@
         }
 
         function cancelRoutineCreation() {
-            if (confirm("Annullare la creazione della scheda? Tutti i progressi non salvati andranno persi.")) {
+            const msg = editingRoutineId !== null
+                ? "Annullare le modifiche alla scheda? Le modifiche non salvate andranno perse."
+                : "Annullare la creazione della scheda? Tutti i progressi non salvati andranno persi.";
+            if (confirm(msg)) {
+                editingRoutineId = null;
                 switchTab('home');
             }
         }
@@ -1637,6 +1738,9 @@
                     <div class="flex items-center gap-2">
                         <button onclick="event.stopPropagation(); deleteRoutine(${idx})" class="p-1.5 text-gray-500 hover:text-red-400">
                             <i class="fa-solid fa-trash-can text-[13px]"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); editRoutine(${idx})" class="p-1.5 text-gray-400 hover:text-neonGreen">
+                            <i class="fa-solid fa-pen-to-square text-[13px]"></i>
                         </button>
                         <i class="fa-solid fa-play text-neonGreen text-[13px]"></i>
                     </div>
@@ -1789,6 +1893,83 @@
             showToast("Sessione libera avviata!");
         }
 
+        function updateWorkoutRest(exIndex, field, value) {
+            if (!currentActiveWorkout) return;
+            currentActiveWorkout.exercises[exIndex][field] = value;
+        }
+
+        function exitWorkout() {
+            if (!currentActiveWorkout) { switchTab('home'); return; }
+            const w = currentActiveWorkout;
+            const touched = w.exercises.some(ex => (ex.sets || []).some(st => st.completed) || (ex.notes && ex.notes.trim()));
+            const addedByHand = !w.isRoutine && w.exercises.length > 0;
+            if ((touched || addedByHand) && !confirm("Uscire dall'allenamento senza salvare? L'allenamento in corso andrà perso.")) return;
+
+            clearInterval(timerInterval);
+            timerInterval = null;
+            RestTimer.stop();
+            currentActiveWorkout = null;
+            setLastLogButtonVisible(false);
+            document.getElementById('workout-routine-tag').classList.add('hidden');
+            switchTab('home');
+            showToast("Sei uscito dall'allenamento");
+        }
+
+        // ----- Home: un solo tocco per continuare dove eri rimasto -----
+        function getNextRoutineSuggestion() {
+            const routines = appData.savedRoutines || [];
+            for (const sess of (appData.workoutsHistory || [])) {
+                if (!sess.isRoutine) continue;
+                let routine = null, dayIdx = null;
+                if (sess.routineId !== undefined) {
+                    routine = routines.find(r => r.id === sess.routineId);
+                    dayIdx = sess.dayIndex;
+                } else {
+                    for (const r of routines) {
+                        const i = (r.days || []).findIndex((d, k) => sess.name === `${r.name} - ${d.dayTitle || `Giorno ${k + 1}`}`);
+                        if (i !== -1) { routine = r; dayIdx = i; break; }
+                    }
+                }
+                if (routine && routine.days && routine.days.length > 0 && dayIdx !== null && dayIdx !== undefined) {
+                    return { routine: routine, dayIndex: (dayIdx + 1) % routine.days.length };
+                }
+            }
+            return null;
+        }
+
+        function updateHomeShortcut() {
+            const label = document.getElementById('home-shortcut-label');
+            const icon = document.getElementById('home-shortcut-icon');
+            if (!label || !icon) return;
+            let text, ic;
+            if (currentActiveWorkout) {
+                const sec = currentActiveWorkout.durationSeconds || 0;
+                const m = String(Math.floor(sec / 60)).padStart(2, '0');
+                const sc = String(sec % 60).padStart(2, '0');
+                text = `RIPRENDI ALLENAMENTO · ${m}:${sc}`;
+                ic = 'fa-play';
+            } else {
+                const next = getNextRoutineSuggestion();
+                if (next) {
+                    const d = next.routine.days[next.dayIndex];
+                    text = `CONTINUA: ${next.routine.name} · ${d.dayTitle || `Giorno ${next.dayIndex + 1}`}`.toUpperCase();
+                    ic = 'fa-play';
+                } else {
+                    text = 'INIZIA ALLENAMENTO';
+                    ic = 'fa-plus';
+                }
+            }
+            label.innerText = text;
+            icon.className = `fa-solid ${ic} text-lg shrink-0`;
+        }
+
+        function homeShortcut() {
+            if (currentActiveWorkout) { switchTab('workout'); return; }
+            const next = getNextRoutineSuggestion();
+            if (next) { startWorkoutFromRoutineDay(next.routine, next.dayIndex); return; }
+            openWorkoutStartModal();
+        }
+
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
             timerInterval = setInterval(() => {
@@ -1797,6 +1978,8 @@
                 const mins = Math.floor(currentActiveWorkout.durationSeconds / 60).toString().padStart(2, '0');
                 const secs = (currentActiveWorkout.durationSeconds % 60).toString().padStart(2, '0');
                 document.getElementById('workout-timer').innerText = `${mins}:${secs}`;
+                const homeTab = document.getElementById('tab-home');
+                if (homeTab && !homeTab.classList.contains('hidden')) updateHomeShortcut();
             }, 1000);
         }
 
@@ -1879,15 +2062,12 @@
                     `;
                 });
 
-                const restInfo = ex.restBetweenSets ? `Recupero: ${ex.restBetweenSets}` : '';
-
                 const cardHTML = `
                     <div class="bg-cardBg rounded-xl border border-cardBorder p-3.5 space-y-3">
                         <div class="flex items-start justify-between">
                             <div>
                                 <h4 class="font-bold text-white text-[15px]">${ex.name}</h4>
                                 ${perfBadgeHTML}
-                                ${restInfo ? `<span class="text-[11px] text-gray-400 block mt-1"><i class="fa-solid fa-stopwatch mr-1 text-neonGreen"></i>${restInfo}</span>` : ''}
                             </div>
                             <button onclick="removeExerciseFromWorkout(${exIndex})" class="text-gray-500 hover:text-red-400 text-[13px] p-1">
                                 <i class="fa-solid fa-xmark text-base"></i>
@@ -1912,6 +2092,16 @@
                         <button onclick="addSetToExercise(${exIndex})" class="w-full py-2 bg-cardBorder/50 hover:bg-cardBorder text-gray-300 font-bold text-[13px] rounded-lg active-scale flex items-center justify-center gap-1">
                             <i class="fa-solid fa-plus text-[11px]"></i> Aggiungi Serie
                         </button>
+                        <div class="grid grid-cols-2 gap-2 text-[13px]">
+                            <div class="bg-bgMain/60 p-2 rounded-lg border border-cardBorder/60">
+                                <label class="text-[11px] text-gray-400 font-semibold block mb-1">Recupero Tra Serie</label>
+                                <select onchange="updateWorkoutRest(${exIndex}, 'restBetweenSets', this.value)" class="w-full bg-cardBg border border-cardBorder rounded py-1 px-1.5 text-[13px] text-white focus:outline-none">${restSetsOptions(ex.restBetweenSets)}</select>
+                            </div>
+                            <div class="bg-bgMain/60 p-2 rounded-lg border border-cardBorder/60">
+                                <label class="text-[11px] text-gray-400 font-semibold block mb-1">Recupero Tra Esercizi</label>
+                                <select onchange="updateWorkoutRest(${exIndex}, 'restBetweenExercises', this.value)" class="w-full bg-cardBg border border-cardBorder rounded py-1 px-1.5 text-[13px] text-white focus:outline-none">${restExOptions(ex.restBetweenExercises)}</select>
+                            </div>
+                        </div>
                         <div class="space-y-1">
                             <label class="text-[11px] text-gray-400 font-semibold uppercase flex items-center gap-1">
                                 <i class="fa-solid fa-note-sticky text-neonGreen"></i> Note
@@ -1952,9 +2142,11 @@
                 const isLastSet = setIndex === ex.sets.length - 1;
                 const isLastExercise = exIndex === currentActiveWorkout.exercises.length - 1;
                 if (!isLastSet) {
-                    RestTimer.start(parseRestToSeconds(ex.restBetweenSets, 60));
+                    const sec = parseRestToSeconds(ex.restBetweenSets, 60);
+                    if (sec > 0) RestTimer.start(sec); else RestTimer.stop();
                 } else if (!isLastExercise) {
-                    RestTimer.start(parseRestToSeconds(ex.restBetweenExercises, 120));
+                    const sec = parseRestToSeconds(ex.restBetweenExercises, 120);
+                    if (sec > 0) RestTimer.start(sec); else RestTimer.stop();
                 } else {
                     RestTimer.stop();
                 }
@@ -2074,6 +2266,8 @@
                         currentActiveWorkout.exercises.push({
                             id: Date.now() + Math.random(),
                             name: ex.name,
+                            restBetweenSets: '60s',
+                            restBetweenExercises: '2 min',
                             sets: [{ setNum: 1, weight: lastPerf ? lastPerf.weight : 20, reps: lastPerf ? lastPerf.reps : 10, completed: false }]
                         });
                         renderWorkoutExercises();
@@ -2149,6 +2343,7 @@
 
             const totalSeconds = history.reduce((sum, session) => sum + (Number(session.durationSeconds) || 0), 0);
             document.getElementById('stat-total-hours').innerText = formatTotalTime(totalSeconds);
+            updateHomeShortcut();
         }
 
         function renderHistoryList(filterText = '') {
