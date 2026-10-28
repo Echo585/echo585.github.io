@@ -699,6 +699,11 @@
                 </div>
             </div>
 
+            <label class="block w-full py-2.5 px-3 bg-cardBorder hover:bg-gray-700 text-white font-bold text-[13px] rounded-xl text-center cursor-pointer active-scale">
+                <i class="fa-solid fa-file-import mr-1.5"></i> Oppure importa una scheda da file
+                <input type="file" accept=".json,application/json" class="hidden" onchange="importProgramFile(event)">
+            </label>
+
             <div class="flex gap-2 pt-2">
                 <button onclick="closeCreateRoutineModal()" class="flex-1 py-2.5 bg-cardBorder hover:bg-gray-700 text-gray-300 font-bold text-[13px] rounded-xl active-scale">
                     Annulla
@@ -1080,8 +1085,9 @@
                     return {
                         name: ex.name,
                         targetSets: ex.sets.length,
-                        targetReps: src ? src.targetReps : (firstSet.reps || 10),
-                        targetWeight: src ? src.targetWeight : '',
+                        targetReps: firstSet.reps || (src ? src.targetReps : 10),
+                        targetWeight: firstSet.weight > 0 ? firstSet.weight : (src ? src.targetWeight : ''),
+                        lastSets: ex.sets.map(st => ({ weight: st.weight, reps: st.reps })),
                         notes: ex.notes || '',
                         restBetweenSets: ex.restBetweenSets || (src && src.restBetweenSets) || '60s',
                         restBetweenExercises: ex.restBetweenExercises || (src && src.restBetweenExercises) || '2 min'
@@ -1796,6 +1802,7 @@
         function updateBuilderExParam(exIndex, param, value) {
             const curDay = routineWizardState.days[routineWizardState.currentDayIndex - 1];
             curDay.exercises[exIndex][param] = value;
+            if (['targetSets', 'targetReps', 'targetWeight'].includes(param)) delete curDay.exercises[exIndex].lastSets;
         }
 
         function adjustBuilderReps(exIndex, delta) {
@@ -1803,6 +1810,7 @@
             let reps = parseInt(curDay.exercises[exIndex].targetReps) || 10;
             reps = Math.max(1, reps + delta);
             curDay.exercises[exIndex].targetReps = reps;
+            delete curDay.exercises[exIndex].lastSets;
             renderBuilderExercises();
         }
 
@@ -2040,10 +2048,16 @@
                         if (sets.length === 0) {
                             sets.push({ setNum: 1, weight: lastPerf ? lastPerf.weight : 20, reps: lastPerf ? lastPerf.reps : 10, completed: false });
                         }
+                    } else if (pEx.lastSets && pEx.lastSets.length > 0) {
+                        // riparte da come hai fatto l'ultima volta, serie per serie
+                        pEx.lastSets.forEach((ls, i) => {
+                            sets.push({ setNum: i + 1, weight: ls.weight, reps: ls.reps, completed: false });
+                        });
                     } else {
                         const setsCount = parseInt(pEx.targetSets) || 3;
-                        const defaultWeight = pEx.targetWeight || (lastPerf ? lastPerf.weight : 20);
-                        const defaultReps = pEx.targetReps || (lastPerf ? lastPerf.reps : 10);
+                        const hasWeight = pEx.targetWeight !== '' && pEx.targetWeight != null && isFinite(Number(pEx.targetWeight));
+                        const defaultWeight = hasWeight ? Number(pEx.targetWeight) : (lastPerf ? lastPerf.weight : 20);
+                        const defaultReps = parseInt(pEx.targetReps) || (lastPerf ? lastPerf.reps : 10);
                         for (let s = 1; s <= setsCount; s++) {
                             sets.push({
                                 setNum: s,
@@ -2209,27 +2223,63 @@
         }
 
         // aggiunge agli elenchi dei gruppi muscolari gli esercizi che ancora non esistono
+        function routineDayLists(routine) {
+            return isWeeksProgram(routine) ? routine.weeks.reduce((all, w) => all.concat(w.days), []) : (routine.days || []);
+        }
+
+        function normalizeLinearRoutine(raw) {
+            if (!Array.isArray(raw.days) || raw.days.length === 0) throw new Error('il file non contiene giorni');
+            const days = raw.days.map((d, di) => ({
+                dayTitle: String((d && d.dayTitle) || `Giorno ${di + 1}`),
+                exercises: (Array.isArray(d && d.exercises) ? d.exercises : []).map(e => {
+                    const name = String((e && e.name) || '').trim();
+                    if (!name) throw new Error('un esercizio non ha il nome');
+                    const w = parseFloat(e.targetWeight);
+                    return {
+                        name: name,
+                        category: normalizeCategory(e.category),
+                        targetSets: Math.max(1, parseInt(e.targetSets) || 3),
+                        targetReps: Math.max(1, parseInt(e.targetReps) || 10),
+                        targetWeight: (isFinite(w) && w > 0) ? w : '',
+                        restBetweenSets: normalizeRest(e.restBetweenSets, '60s', 'sets'),
+                        restBetweenExercises: normalizeRest(e.restBetweenExercises, '2 min', 'ex'),
+                        notes: String(e.notes || '')
+                    };
+                })
+            }));
+            return {
+                id: Date.now(),
+                name: String(raw.name || '').trim() || 'Scheda',
+                totalDays: days.length,
+                days: days,
+                createdDate: new Date().toISOString()
+            };
+        }
+
         function registerProgramExercises(routine) {
             const known = new Set([...DEFAULT_EXERCISES, ...(appData.customExercises || [])].map(e => e.name.toLowerCase()));
             let added = 0;
-            routine.weeks.forEach(w => w.days.forEach(d => d.exercises.forEach(ex => {
+            routineDayLists(routine).forEach(d => d.exercises.forEach(ex => {
                 const k = ex.name.toLowerCase();
                 if (!known.has(k)) {
                     appData.customExercises.push({ name: ex.name, category: ex.category || 'Personalizzato' });
                     known.add(k);
                     added++;
                 }
-            })));
+            }));
             return added;
         }
 
         function importProgramObject(raw) {
-            const routine = normalizeProgram(raw);
+            const isLinear = !!raw && (raw.type === 'linear' || (Array.isArray(raw.days) && !Array.isArray(raw.weeks)));
+            const routine = isLinear ? normalizeLinearRoutine(raw) : normalizeProgram(raw);
             const added = registerProgramExercises(routine);
             appData.savedRoutines.push(routine);
             saveLocalData();
             closeProgramImportModal();
-            showToast(`Programma importato: ${routine.weeks.length} settimane` + (added ? `, ${added} nuovi esercizi` : ''));
+            closeCreateRoutineModal();
+            const what = isLinear ? `Scheda importata: ${routine.days.length} giorni` : `Programma importato: ${routine.weeks.length} settimane`;
+            showToast(what + (added ? `, ${added} nuovi esercizi` : ''));
             openWorkoutStartModal();
             return routine;
         }
